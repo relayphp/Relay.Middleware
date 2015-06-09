@@ -1,0 +1,23 @@
+{
+    "name": "relay/middleware",
+    "description": "Basic Relay-compatible middleware decorators.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "psr/http-message": "~1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Relay\\Middleware\\": "src/"
+        }
+    },
+    "require-dev": {
+        "zendframework/zend-diactoros": "~1.0"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Relay\\Middleware\\": "tests/"
+        }
+    },
+    "minimum-stability": "dev"
+}
