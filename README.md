@@ -3,7 +3,7 @@
 This package include the following Relay-compatible middleware:
 
 - _ResponseSender_ to send a PSR-7 response
-- _ExceptionHandler_ to handler exceptions from subsequent middleware
+- _ExceptionHandler_ to handle exceptions from subsequent middleware
 
 This package is installable and PSR-4 autoloadable via Composer as `relay/middleware`.
 
