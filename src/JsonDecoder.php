@@ -8,12 +8,13 @@ class JsonDecoder
 {
     public function __invoke(Request $request, Response $response, callable $next)
     {
-        $type   = $request->getHeader('Content-Type');
+        $parts  = explode(';', $request->getHeaderLine('Content-Type'));
+        $type   = trim(array_shift($parts));
         $method = $request->getMethod();
 
         if ('GET' != $method
             && ! empty($type)
-            && 'application/json' == strtolower($type[0])
+            && 'application/json' == strtolower($type)
         ) {
             $body    = (string) $request->getBody();
             $request = $request->withParsedBody(json_decode($body));

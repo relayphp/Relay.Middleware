@@ -18,12 +18,20 @@ class JsonDecoderTest extends \PHPUnit_Framework_TestCase
             ['GET'   , 'application/json', []],
             ['GET'   , null, []],
             ['POST'  , 'application/json', $this->data],
+            ['POST'  , 'application/json; charset=utf-8', $this->data],
+            ['POST'  , 'application/json ; charset=utf-8', $this->data],
             ['POST'  , null, []],
             ['PUT'   , 'application/json', $this->data],
+            ['PUT'   , 'application/json; charset=utf-8', $this->data],
+            ['PUT'   , 'application/json ; charset=utf-8', $this->data],
             ['PUT'   , null, []],
             ['PATCH' , 'application/json', $this->data],
+            ['PATCH' , 'application/json; charset=utf-8', $this->data],
+            ['PATCH' , 'application/json ; charset=utf-8', $this->data],
             ['PATCH' , null, []],
             ['other' , 'application/json', $this->data],
+            ['other' , 'application/json; charset=utf-8', $this->data],
+            ['other' , 'application/json ; charset=utf-8', $this->data],
             ['other' , null, []]
         ];
     }
