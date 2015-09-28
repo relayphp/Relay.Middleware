@@ -10,7 +10,8 @@ class JsonDecoder
     protected $maxDepth;
     protected $options;
     
-    public function __construct($assoc = false, $max_depth = 256, $options = 0){
+    public function __construct($assoc = false, $max_depth = 256, $options = 0)
+    {
         $this->assoc = $assoc;
         $this->max_depth = $maxDepth;
         $this->options = $options;
