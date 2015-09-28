@@ -6,10 +6,14 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class JsonDecoder
 {
-    private $assoc;
+    protected $assoc;
+    protected $max_depth;
+    protected $options;
     
-    public function __construct($assoc = 0){
+    public function __construct($assoc = false, $max_depth = 256, $options = 0){
         $this->assoc = $assoc;
+        $this->max_depth = $max_depth;
+        $this->options = $options;
     }
     
     public function __invoke(Request $request, Response $response, callable $next)
@@ -23,7 +27,10 @@ class JsonDecoder
             && 'application/json' == strtolower($type)
         ) {
             $body    = (string) $request->getBody();
-            $request = $request->withParsedBody(json_decode($body, $this->assoc));
+            $request = $request->withParsedBody(json_decode($body,
+                                                            $this->assoc,
+                                                            $this->max_depth,
+                                                            $this->options));
         }
 
         return $next($request, $response);
