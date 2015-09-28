@@ -7,12 +7,12 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 class JsonDecoder
 {
     protected $assoc;
-    protected $max_depth;
+    protected $maxDepth;
     protected $options;
     
     public function __construct($assoc = false, $max_depth = 256, $options = 0){
         $this->assoc = $assoc;
-        $this->max_depth = $max_depth;
+        $this->max_depth = $maxDepth;
         $this->options = $options;
     }
     
@@ -29,7 +29,7 @@ class JsonDecoder
             $body    = (string) $request->getBody();
             $request = $request->withParsedBody(json_decode($body,
                                                             $this->assoc,
-                                                            $this->max_depth,
+                                                            $this->maxDepth,
                                                             $this->options));
         }
 
