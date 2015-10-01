@@ -13,7 +13,7 @@ class JsonDecoder
     public function __construct($assoc = false, $maxDepth = 256, $options = 0)
     {
         $this->assoc = $assoc;
-        $this->max_depth = $maxDepth;
+        $this->maxDepth = $maxDepth;
         $this->options = $options;
     }
     
