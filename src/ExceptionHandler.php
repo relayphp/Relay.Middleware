@@ -20,7 +20,7 @@ class ExceptionHandler
             $response = $next($request, $response);
         } catch (Exception $e) {
             $response = $this->exceptionResponse->withStatus(500);
-            $response->getBody()->write($e->getMessage());
+            $response->getBody()->write('exception caught with message: ' . $e->getMessage());
         }
         return $response;
     }
