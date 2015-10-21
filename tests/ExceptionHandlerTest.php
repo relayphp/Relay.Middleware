@@ -24,7 +24,7 @@ class ExceptionHandlerTest extends \PHPUnit_Framework_TestCase
             }
         );
 
-        $this->assertEquals('Random exception', $response->getBody()->__toString());
+        $this->assertEquals('exception caught with message: Random exception', $response->getBody()->__toString());
         $this->assertEquals(500, $response->getStatusCode());
     }
 
