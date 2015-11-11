@@ -4,7 +4,8 @@ This package include the following Relay-compatible middleware:
 
 - _ResponseSender_ to send a PSR-7 response
 - _ExceptionHandler_ to handle exceptions from subsequent middleware
-- _JsonDecoder_ to deserialize the JSON payload of a PSR-7 request
+- _JsonContentHandler_ to deserialize the JSON payload of a PSR-7 request
+- _JsonDecoder_ to deserialize the JSON payload of a PSR-7 request (**deprecated**)
 
 This package is installable and PSR-4 autoloadable via Composer as `relay/middleware`.
 
@@ -40,7 +41,43 @@ $queue = new \Relay\Middleware\ExceptionHandler(new ResponseImplementation());
 
 ... or use a `$resolver` of your choice to instantiate it from the `$queue`.
 
+## JsonContentHandler
+
+Again, the _JsonContentHandler_ does what it sounds like: it deserializes the JSON
+payload of a PSR-7 request object and makes the parameters available in
+subsequent middleware decorators.
+
+The _JsonContentHandler_ checks the incoming request for a method other than `GET`
+and for an `application/json` or `application/vnd.api+json` `Content-Type` header.
+If it finds both of these, it parses the JSON and makes it available as the
+_parsed body_ of the `$request` before passing it and the `$response` to `$next`.
+If the method is `GET` or the `Content-Type` header defines a different mime type,
+the _JsonContentHandler_ ignores the `$request` and continues the chain.
+
+To add the _JsonContentHandler_ to your queue, instantiate it directly...
+
+```php
+$queue = new \Relay\Middleware\JsonContentHandler();
+```
+
+... or use a `$resolver` of your choice to instantiate it from the `$queue`.
+
+To access the decoded parameters in subsequent middleware, use the
+`getParsedBody()` method of the `$request`
+
+```php
+$decodedJsonData = $request->getParsedBody();
+```
+
+## FormContentHandler
+
+_FormContentHandler_ works almost identically to _JsonContentHandler_, but parses
+payloads of requests that have `application/x-www-form-urlencoded` as the `Content-Type`.
+
+
 ## JsonDecoder
+
+**NOTE: This handler has been deprecated in favor of _JsonContentHandler_!**
 
 Again, the _JsonDecoder_ does what it sounds like: it deserializes the JSON
 payload of a PSR-7 request object and makes the parameters available in
