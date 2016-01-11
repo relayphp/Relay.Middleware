@@ -2,6 +2,7 @@
     "name": "relay/middleware",
     "description": "Basic Relay-compatible middleware decorators.",
     "type": "library",
+    "homepage": "https://github.com/relayphp/Relay.Middleware",
     "license": "MIT",
     "require": {
         "psr/http-message": "~1.0"
