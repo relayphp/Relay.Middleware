@@ -10,7 +10,7 @@ function header($string, $flag = null)
     FakePhp::header($string, $flag);
 }
 
-class SendingHandlerTest extends \PHPUnit_Framework_TestCase
+class ResponseSenderTest extends \PHPUnit_Framework_TestCase
 {
     public function test()
     {

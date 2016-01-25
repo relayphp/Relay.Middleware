@@ -42,6 +42,10 @@ class ResponseSender
 
     protected function sendBody(Response $response)
     {
-        echo $response->getBody();
+        $stream = $response->getBody();
+        $stream->rewind();
+        while (! $stream->eof()) {
+            echo $stream->read(8192);
+        }
     }
 }
