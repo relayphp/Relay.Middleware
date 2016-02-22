@@ -54,6 +54,19 @@ class JsonDecoder
         $this->options = $options;
     }
 
+    /**
+     *
+     * Parses the PSR-7 request body if its content-type is 'application/json'.
+     *
+     * @param Request $request The HTTP request.
+     *
+     * @param Response $response The HTTP response.
+     *
+     * @param callable $next The next middleware in the queue.
+     *
+     * @return Response
+     *
+     */
     public function __invoke(Request $request, Response $response, callable $next)
     {
         $parts = explode(';', $request->getHeaderLine('Content-Type'));
