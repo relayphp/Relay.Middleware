@@ -24,7 +24,11 @@ use RuntimeException;
 abstract class ContentHandler
 {
     /**
-     * @var array Methods that cannot have request bodies
+     *
+     * Methods that cannot have request bodies.
+     *
+     * @var array
+     *
      */
     protected $httpMethodsWithoutContent = [
         'GET',
@@ -32,33 +36,39 @@ abstract class ContentHandler
     ];
 
     /**
-     * Check if the content type is appropriate for handling
      *
-     * @param string $mime
+     * Checks if the content type is appropriate for handling.
+     *
+     * @param string $mime The mime type.
      *
      * @return boolean
+     *
      */
     abstract protected function isApplicableMimeType($mime);
 
     /**
-     * Parse the request body
+     *
+     * Parses the request body.
+     *
+     * @param string $body The request body.
+     *
+     * @return mixed
      *
      * @uses throwException()
      *
-     * @param string $body
-     *
-     * @return mixed
      */
     abstract protected function getParsedBody($body);
 
     /**
-     * Throw an exception when parsing fails
      *
-     * @param string $message
+     * Throws a a RuntimeException.
      *
-     * @return void
+     * @param string $message The message for the exception.
      *
-     * @throws \RuntimeException
+     * @return null
+     *
+     * @throws RuntimeException
+     *
      */
     protected function throwException($message)
     {
@@ -66,25 +76,49 @@ abstract class ContentHandler
     }
 
     /**
-     * Parses request bodies based on content type
      *
-     * @param  Request  $request
-     * @param  Response $response
-     * @param  callable $next
+     * Parses the PSR-7 request body based on content type.
+     *
+     * @param Request $request The HTTP request.
+     *
+     * @param Response $response The HTTP response.
+     *
+     * @param callable $next The next middleware in the queue.
+     *
      * @return Response
+     *
      */
     public function __invoke(Request $request, Response $response, callable $next)
     {
-        if (!in_array($request->getMethod(), $this->httpMethodsWithoutContent)) {
-            $parts = explode(';', $request->getHeaderLine('Content-Type'));
-            $mime  = strtolower(trim(array_shift($parts)));
+        $isContentMethod = ! in_array(
+            $request->getMethod(),
+            $this->httpMethodsWithoutContent
+        );
 
-            if ($this->isApplicableMimeType($mime) && !$request->getParsedBody()) {
-                $parsed  = $this->getParsedBody((string) $request->getBody());
-                $request = $request->withParsedBody($parsed);
-            }
+        if ($isContentMethod) {
+            $request = $this->requestWithParsedBody($request);
         }
 
         return $next($request, $response);
+    }
+
+    /**
+     *
+     * Returns a Request with parsed body content.
+     *
+     * @param Request $request The HTTP request.
+     *
+     * @return Request
+     *
+     */
+    protected function requestWithParsedBody(Request $request)
+    {
+        $parts = explode(';', $request->getHeaderLine('Content-Type'));
+        $mime = strtolower(trim(array_shift($parts)));
+        if ($this->isApplicableMimeType($mime) && ! $request->getParsedBody()) {
+            $parsed = $this->getParsedBody((string) $request->getBody());
+            $request = $request->withParsedBody($parsed);
+        }
+        return $request;
     }
 }
