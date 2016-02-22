@@ -1,10 +1,25 @@
 <?php
-
+/**
+ *
+ * This file is part of Relay for PHP.
+ *
+ * @license http://opensource.org/licenses/MIT MIT
+ *
+ * @copyright 2015-2016, Relay for PHP
+ *
+ */
 namespace Relay\Middleware;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
+/**
+ *
+ * Handles JSON content.
+ *
+ * @package Relay.Middleware
+ *
+ */
 class JsonContentHandler extends ContentHandler
 {
     /**
@@ -24,8 +39,8 @@ class JsonContentHandler extends ContentHandler
 
     /**
      * @param bool $assoc
-     * @param int  $maxDepth
-     * @param int  $options
+     * @param int $maxDepth
+     * @param int $options
      */
     public function __construct($assoc = false, $maxDepth = 512, $options = 0)
     {

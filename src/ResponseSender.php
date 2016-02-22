@@ -1,9 +1,25 @@
 <?php
+/**
+ *
+ * This file is part of Relay for PHP.
+ *
+ * @license http://opensource.org/licenses/MIT MIT
+ *
+ * @copyright 2015-2016, Relay for PHP
+ *
+ */
 namespace Relay\Middleware;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
+/**
+ *
+ * Sends the PSR-7 response.
+ *
+ * @package Relay.Middleware
+ *
+ */
 class ResponseSender
 {
     public function __invoke(Request $request, Response $response, callable $next)

@@ -1,15 +1,52 @@
 <?php
+/**
+ *
+ * This file is part of Relay for PHP.
+ *
+ * @license http://opensource.org/licenses/MIT MIT
+ *
+ * @copyright 2015-2016, Relay for PHP
+ *
+ */
 namespace Relay\Middleware;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
+/**
+ *
+ * Deprecated handler for JSON content; consider using JsonContentHandler
+ * instead.
+ *
+ * @package Relay.Middleware
+ *
+ */
 class JsonDecoder
 {
+    /**
+     * @var bool
+     */
     protected $assoc;
+
+    /**
+     * @var int
+     */
     protected $maxDepth;
+
+    /**
+     * @var int
+     */
     protected $options;
 
+    /**
+     *
+     * @param bool $assoc
+     *
+     * @param int $maxDepth
+     *
+     * @param int $options
+     *
+     */
     public function __construct($assoc = false, $maxDepth = 256, $options = 0)
     {
         $this->assoc = $assoc;

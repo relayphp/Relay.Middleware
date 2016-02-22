@@ -1,12 +1,26 @@
 <?php
-
+/**
+ *
+ * This file is part of Relay for PHP.
+ *
+ * @license http://opensource.org/licenses/MIT MIT
+ *
+ * @copyright 2015-2016, Relay for PHP
+ *
+ */
 namespace Relay\Middleware;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-
 use RuntimeException;
 
+/**
+ *
+ * Base class for content handlers.
+ *
+ * @package Relay.Middleware
+ *
+ */
 abstract class ContentHandler
 {
     /**

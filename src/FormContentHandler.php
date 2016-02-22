@@ -1,7 +1,22 @@
 <?php
-
+/**
+ *
+ * This file is part of Relay for PHP.
+ *
+ * @license http://opensource.org/licenses/MIT MIT
+ *
+ * @copyright 2015-2016, Relay for PHP
+ *
+ */
 namespace Relay\Middleware;
 
+/**
+ *
+ * Handles URL-encoded content.
+ *
+ * @package Relay.Middleware
+ *
+ */
 class FormContentHandler extends ContentHandler
 {
     /**
