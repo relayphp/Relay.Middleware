@@ -4,6 +4,7 @@ This package include the following Relay-compatible middleware:
 
 - _ResponseSender_ to send a PSR-7 response
 - _ExceptionHandler_ to handle exceptions from subsequent middleware
+- _FormContentHandler_ to deserialize the URL-encoded payload of a PSR-7 request
 - _JsonContentHandler_ to deserialize the JSON payload of a PSR-7 request
 - _JsonDecoder_ to deserialize the JSON payload of a PSR-7 request (**deprecated**)
 
