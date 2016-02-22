@@ -1,6 +1,6 @@
 {
     "name": "relay/middleware",
-    "description": "Basic Relay-compatible middleware decorators.",
+    "description": "Relay-compatible middleware decorators.",
     "type": "library",
     "homepage": "https://github.com/relayphp/Relay.Middleware",
     "license": "MIT",
@@ -19,6 +19,5 @@
         "psr-4": {
             "Relay\\Middleware\\": "tests/"
         }
-    },
-    "minimum-stability": "dev"
+    }
 }
