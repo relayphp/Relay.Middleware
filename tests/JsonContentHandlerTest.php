@@ -22,6 +22,7 @@ class JsonContentHandlerTest extends ContentHandlerTestCase
                 'application/json; charset=utf-8',
                 'application/json ; charset=utf-8',
                 'application/vnd.api+json',
+                'application/vnd.custom+json',
             ] as $mime) {
                 foreach ([
                     (object) ['foo' => 'bar'],
