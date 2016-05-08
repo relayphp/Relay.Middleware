@@ -1,5 +1,4 @@
 <?php
-
 namespace Relay\Middleware;
 
 use Relay\Middleware\FormContentHandler;

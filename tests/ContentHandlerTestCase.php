@@ -1,5 +1,4 @@
 <?php
-
 namespace Relay\Middleware;
 
 use Zend\Diactoros\ServerRequest;
