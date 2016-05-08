@@ -10,6 +10,7 @@ namespace Relay\Middleware;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use RuntimeException;
 
 /**
  *
@@ -47,6 +48,8 @@ class SessionHeadersHandler
      */
     public function __invoke(Request $request, Response $response, callable $next)
     {
+        $this->checkIniSettings();
+
         // retain the incoming session id
         $oldId = '';
         $oldName = session_name();
@@ -72,6 +75,31 @@ class SessionHeadersHandler
 
         // done!
         return $response;
+    }
+
+    /**
+     *
+     * Checks that the .ini settings are correct for this middleware.
+     *
+     * @throws RuntimeException
+     *
+     */
+    protected function checkIniSettings()
+    {
+        if (ini_get('session.use_trans_sid') != false) {
+            $message = "The .ini setting 'session.use_trans_sid' must be false.";
+            throw new RuntimeException($message);
+        }
+
+        if (ini_get('session.use_cookies') != false) {
+            $message = "The .ini setting 'session.use_cookies' must be false.";
+            throw new RuntimeException($message);
+        }
+
+        if (ini_get('session.use_only_cookies') != true) {
+            $message = "The .ini setting 'session.use_only_cookies' must be true.";
+            throw new RuntimeException($message);
+        }
     }
 
     /**
