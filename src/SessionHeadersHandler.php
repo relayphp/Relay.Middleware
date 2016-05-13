@@ -14,7 +14,8 @@ use RuntimeException;
 
 /**
  *
- * Sends the session headers in the Response.
+ * Sends the session headers in the Response, putting them under manual control
+ * rather than relying on PHP to send them itself.
  *
  * This works correctly only if you have these settings:
  *
@@ -22,69 +23,24 @@ use RuntimeException;
  * ini_set('session.use_trans_sid', false);
  * ini_set('session.use_cookies', false);
  * ini_set('session.use_only_cookies', true);
+ * ini_set('session.cache_limiter', '');
  * ```
  *
- * @todo http://php.net/manual/en/function.session-cache-limiter.php
- *
- * @todo http://php.net/manual/en/function.session-cache-expire.php
+ * Note that the Last-Modified value will not be the last time the session was
+ * saved, but instead the current `time()`.
  *
  * @package Relay.Middleware
  *
  */
 class SessionHeadersHandler
 {
-    /**
-     *
-     * Sends the session headers in the Response.
-     *
-     * @param Request $request The HTTP request.
-     *
-     * @param Response $response The HTTP response.
-     *
-     * @param callable $next The next middleware in the queue.
-     *
-     * @return Response
-     *
-     */
-    public function __invoke(Request $request, Response $response, callable $next)
-    {
-        $this->checkIniSettings();
+    const EXPIRED = 'Thu, 19 Nov 1981 08:52:00 GMT';
 
-        // retain the incoming session id
-        $oldId = '';
-        $oldName = session_name();
-        $cookies = $request->getCookieParams();
-        if (! empty($cookies[$oldName])) {
-            $oldId = $cookies[$oldName];
-        }
+    protected $cacheLimiter;
 
-        // invoke the next middleware
-        $response = $next($request, $response);
+    protected $cacheExpire;
 
-        // is the session id still the same?
-        $newId = session_id();
-        if ($newId !== $oldId) {
-            // one of the middlewares changed it.
-            // capture any session name changes as well.
-            $newName = session_name();
-            $response = $response->withAddedHeader(
-                'Set-Cookie',
-                $this->newSessionCookie($newName, $newId)
-            );
-        }
-
-        // done!
-        return $response;
-    }
-
-    /**
-     *
-     * Checks that the .ini settings are correct for this middleware.
-     *
-     * @throws RuntimeException
-     *
-     */
-    protected function checkIniSettings()
+    public function __construct($cacheLimiter = 'nocache', $cacheExpire = 180)
     {
         if (ini_get('session.use_trans_sid') != false) {
             $message = "The .ini setting 'session.use_trans_sid' must be false.";
@@ -100,45 +56,162 @@ class SessionHeadersHandler
             $message = "The .ini setting 'session.use_only_cookies' must be true.";
             throw new RuntimeException($message);
         }
+
+        if (ini_get('session.cache_limiter') != false) {
+            $message = "The .ini setting 'session.cache_limiter' must be false.";
+            throw new RuntimeException($message);
+        }
+
+        $this->cacheLimiter = $cacheLimiter;
+        $this->cacheExpire = (int) $cacheExpire;
     }
 
     /**
      *
-     * Returns a new session cookie header value.
+     * Sends the session headers in the Response.
+     *
+     * @param Request $request The HTTP request.
+     *
+     * @param Response $response The HTTP response.
+     *
+     * @param callable $next The next middleware in the queue.
+     *
+     * @return Response
+     *
+     */
+    public function __invoke(Request $request, Response $response, callable $next)
+    {
+        // retain the incoming session id
+        $oldId = '';
+        $oldName = session_name();
+        $cookies = $request->getCookieParams();
+        if (! empty($cookies[$oldName])) {
+            $oldId = $cookies[$oldName];
+        }
+
+        // invoke the next middleware
+        $response = $next($request, $response);
+
+        // is the session id still the same?
+        $newId = session_id();
+        if ($newId !== $oldId) {
+            // one of the middlewares changed it; send the new one.
+            // capture any session name changes as well.
+            $response = $this->withNewSessionCookie($response, $newId);
+        }
+
+        // if there is a session id, also send the cache limiters
+        if ($newId) {
+            $response = $this->withCacheLimiter($response);
+        }
+
+        // done!
+        return $response;
+    }
+
+    /**
+     *
+     * Adds a session cookie header to the Response.
      *
      * @see https://github.com/php/php-src/blob/PHP-5.6.20/ext/session/session.c#L1337-L1407
      *
      * @return string
      *
      */
-    protected function newSessionCookie($newName, $newId)
+    protected function withNewSessionCookie($response, $sessionId)
     {
-        $cookie = urlencode($newName) . '=' . urlencode($newId);
+        $cookie = urlencode(session_name()) . '=' . urlencode($sessionId);
 
-        // $lifetime, $path, $domain, $secure, $httponly
-        extract(session_get_cookie_params());
+        $params = session_get_cookie_params();
 
-        if ($lifetime) {
-            $expires = gmdate('D, d M Y H:i:s T', time() + $lifetime);
-            $cookie .= "; expires={$expires}; max-age={$lifetime}";
+        if ($params['lifetime']) {
+            $expires = $this->timestamp(time() + $params['lifetime']);
+            $cookie .= "; expires={$expires}; max-age={$params['lifetime']}";
         }
 
-        if ($domain) {
-            $cookie .= "; domain={$domain}";
+        if ($params['domain']) {
+            $cookie .= "; domain={$params['domain']}";
         }
 
-        if ($path) {
-            $cookie .= "; path={$path}";
+        if ($params['path']) {
+            $cookie .= "; path={$params['path']}";
         }
 
-        if ($secure) {
+        if ($params['secure']) {
             $cookie .= '; secure';
         }
 
-        if ($httponly) {
+        if ($params['httponly']) {
             $cookie .= '; httponly';
         }
 
-        return $cookie;
+        return $response->withAddedHeader('Set-Cookie', $cookie);
+    }
+
+    protected function timestamp($time)
+    {
+        return gmdate('D, d M Y H:i:s T', $time);
+    }
+
+    protected function withCacheLimiter(Response $response)
+    {
+        switch ($this->cacheLimiter) {
+            case 'public':
+                return $this->cacheLimiterPublic($response);
+            case 'private_no_expire':
+                return $this->cacheLimiterPrivateNoExpire($response);
+            case 'private':
+                return $this->cacheLimiterPrivate($response);
+            case 'nocache':
+                return $this->cacheLimiterNocache($response);
+            default:
+                return $response;
+        }
+    }
+
+    // session.c:1065
+    protected function cacheLimiterPublic(Response $response)
+    {
+        $now = time();
+        $maxAge = $this->cacheExpires * 60;
+        $expires = $this->timestamp($now + $maxAge);
+        $cacheControl = "public, max-age={$maxAge}";
+        $lastModified = $this->timestamp($now);
+
+        return $response
+            ->withAddedHeader('Expires', $expires)
+            ->withAddedHeader('Cache-Control', $cacheControl)
+            ->withAddedHeader('Last-Modified', $lastModified);
+    }
+
+    // session.c:1084
+    protected function cacheLimiterPrivateNoExpire(Response $response)
+    {
+        $maxAge = $this->cacheExpires * 60;
+        $cacheControl = "private, max-age={$maxAge}, pre-check={$maxAge}";
+        $lastModified = $this->timestamp(time());
+
+        return $response
+            ->withAddedHeader('Cache-Control', $cacheControl)
+            ->withAddedHeader('Last-Modified', $lastModified);
+    }
+
+    // session.c:1095
+    protected function cacheLimiterPrivate(Response $response)
+    {
+        $response = $response->withAddedHeader('Expires', self::EXPIRED);
+        return $response->withCacheLimiterPrivateNoExpire($response);
+    }
+
+    // session.c:1102
+    protected function cacheLimiterNocache(Response $response)
+    {
+        return $response
+            ->withAddedHeader('Expires', self::EXPIRED)
+            ->withAddedHeader(
+                'Cache-Control',
+                'no-store, no-cache, must-revalidate, post-check=0, pre-check=0'
+            )
+            ->withAddedHeader('Pragma', 'no-cache');
     }
 }
