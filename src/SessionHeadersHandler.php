@@ -57,8 +57,8 @@ class SessionHeadersHandler
             throw new RuntimeException($message);
         }
 
-        if (ini_get('session.cache_limiter') != false) {
-            $message = "The .ini setting 'session.cache_limiter' must be false.";
+        if (ini_get('session.cache_limiter') !== '') {
+            $message = "The .ini setting 'session.cache_limiter' must be an empty string.";
             throw new RuntimeException($message);
         }
 
