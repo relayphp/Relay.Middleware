@@ -17,7 +17,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
  *
  * Handles JSON content.
  *
- * @package Relay.Middleware
+ * @package relay/middleware
  *
  */
 class JsonContentHandler extends ContentHandler

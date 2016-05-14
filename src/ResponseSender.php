@@ -17,7 +17,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
  *
  * Sends the PSR-7 response.
  *
- * @package Relay.Middleware
+ * @package relay/middleware
  *
  */
 class ResponseSender

@@ -18,7 +18,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
  * Deprecated handler for JSON content; consider using JsonContentHandler
  * instead.
  *
- * @package Relay.Middleware
+ * @package relay/middleware
  *
  */
 class JsonDecoder

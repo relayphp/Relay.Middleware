@@ -18,7 +18,7 @@ use RuntimeException;
  *
  * Base class for content handlers.
  *
- * @package Relay.Middleware
+ * @package relay/middleware
  *
  */
 abstract class ContentHandler

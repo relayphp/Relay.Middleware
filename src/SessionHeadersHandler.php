@@ -29,7 +29,7 @@ use RuntimeException;
  * Note that the Last-Modified value will not be the last time the session was
  * saved, but instead the current `time()`.
  *
- * @package Relay.Middleware
+ * @package relay/middleware
  *
  */
 class SessionHeadersHandler

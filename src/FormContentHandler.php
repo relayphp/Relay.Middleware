@@ -14,7 +14,7 @@ namespace Relay\Middleware;
  *
  * Handles URL-encoded content.
  *
- * @package Relay.Middleware
+ * @package relay/middleware
  *
  */
 class FormContentHandler extends ContentHandler

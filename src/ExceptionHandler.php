@@ -18,7 +18,7 @@ use Psr\Http\Message\ResponseInterface as Response;
  *
  * Catches exceptions thrown by middleware later in the queue.
  *
- * @package Relay.Middleware
+ * @package relay/middleware
  *
  */
 class ExceptionHandler
