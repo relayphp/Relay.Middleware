@@ -34,14 +34,55 @@ use RuntimeException;
  */
 class SessionHeadersHandler
 {
+    /**
+     * The timestamp for "already expired."
+     */
     const EXPIRED = 'Thu, 19 Nov 1981 08:52:00 GMT';
 
+    /**
+     *
+     * The cache limiter type, if any.
+     *
+     * @var string
+     *
+     * @see session_set_cache_limiter()
+     *
+     */
     protected $cacheLimiter;
 
+    /**
+     *
+     * The cache expiration time in minutes.
+     *
+     * @var int
+     *
+     * @see session_set_cache_expire()
+     *
+     */
     protected $cacheExpire;
 
+    /**
+     *
+     * The current Unix timestamp.
+     *
+     * @var int
+     *
+     * @see session_set_cache_expire()
+     *
+     */
     protected $time;
 
+    /**
+     *
+     * Constructor.
+     *
+     * @param string $cacheLimiter The cache limiter type.
+     *
+     * @param string $cacheExpire The cache expiration time in minutes.
+     *
+     * @throws RuntimeException when the ini settings are incorrect.
+     *
+     */
     public function __construct($cacheLimiter = 'nocache', $cacheExpire = 180)
     {
         if (ini_get('session.use_trans_sid') != false) {
@@ -118,12 +159,16 @@ class SessionHeadersHandler
      *
      * Adds a session cookie header to the Response.
      *
-     * @see https://github.com/php/php-src/blob/PHP-5.6.20/ext/session/session.c#L1337-L1407
+     * @param Response $response The HTTP response.
      *
-     * @return string
+     * @param string $sessionId The new session ID.
+     *
+     * @return Response
+     *
+     * @see https://github.com/php/php-src/blob/PHP-5.6.20/ext/session/session.c#L1337-L1408
      *
      */
-    protected function withNewSessionCookie($response, $sessionId)
+    protected function withNewSessionCookie(Response $response, $sessionId)
     {
         $cookie = urlencode(session_name()) . '=' . urlencode($sessionId);
 
@@ -153,11 +198,29 @@ class SessionHeadersHandler
         return $response->withAddedHeader('Set-Cookie', $cookie);
     }
 
+    /**
+     *
+     * Returns a cookie-formatted timestamp.
+     *
+     * @param int $adj Adjust the time by this many seconds before formatting.
+     *
+     * @return string
+     *
+     */
     protected function timestamp($adj = 0)
     {
         return gmdate('D, d M Y H:i:s T', $this->time + $adj);
     }
 
+    /**
+     *
+     * Returns a Response with added cache limiter headers.
+     *
+     * @param Response $response The HTTP response.
+     *
+     * @return Response
+     *
+     */
     protected function withCacheLimiter(Response $response)
     {
         switch ($this->cacheLimiter) {
@@ -174,7 +237,17 @@ class SessionHeadersHandler
         }
     }
 
-    // session.c:1065
+    /**
+     *
+     * Returns a Response with 'public' cache limiter headers.
+     *
+     * @param Response $response The HTTP response.
+     *
+     * @return Response
+     *
+     * @see https://github.com/php/php-src/blob/PHP-5.6.20/ext/session/session.c#L1196-L1213
+     *
+     */
     protected function cacheLimiterPublic(Response $response)
     {
         $maxAge = $this->cacheExpire * 60;
@@ -188,7 +261,17 @@ class SessionHeadersHandler
             ->withAddedHeader('Last-Modified', $lastModified);
     }
 
-    // session.c:1084
+    /**
+     *
+     * Returns a Response with 'private_no_expire' cache limiter headers.
+     *
+     * @param Response $response The HTTP response.
+     *
+     * @return Response
+     *
+     * @see https://github.com/php/php-src/blob/PHP-5.6.20/ext/session/session.c#L1215-L1224
+     *
+     */
     protected function cacheLimiterPrivateNoExpire(Response $response)
     {
         $maxAge = $this->cacheExpire * 60;
@@ -200,14 +283,34 @@ class SessionHeadersHandler
             ->withAddedHeader('Last-Modified', $lastModified);
     }
 
-    // session.c:1095
+    /**
+     *
+     * Returns a Response with 'private' cache limiter headers.
+     *
+     * @param Response $response The HTTP response.
+     *
+     * @return Response
+     *
+     * @see https://github.com/php/php-src/blob/PHP-5.6.20/ext/session/session.c#L1226-L1231
+     *
+     */
     protected function cacheLimiterPrivate(Response $response)
     {
         $response = $response->withAddedHeader('Expires', self::EXPIRED);
         return $this->cacheLimiterPrivateNoExpire($response);
     }
 
-    // session.c:1102
+    /**
+     *
+     * Returns a Response with 'nocache' cache limiter headers.
+     *
+     * @param Response $response The HTTP response.
+     *
+     * @return Response
+     *
+     * @see https://github.com/php/php-src/blob/PHP-5.6.20/ext/session/session.c#L1233-L1243
+     *
+     */
     protected function cacheLimiterNocache(Response $response)
     {
         return $response
