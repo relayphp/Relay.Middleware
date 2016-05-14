@@ -2,29 +2,14 @@
 
 This package include the following Relay-compatible middleware:
 
-- _ResponseSender_ to send a PSR-7 response
 - _ExceptionHandler_ to handle exceptions from subsequent middleware
 - _FormContentHandler_ to deserialize the URL-encoded payload of a PSR-7 request
 - _JsonContentHandler_ to deserialize the JSON payload of a PSR-7 request
 - _JsonDecoder_ to deserialize the JSON payload of a PSR-7 request (**deprecated**)
+- _ResponseSender_ to send a PSR-7 response
+- _SessionHeadersHandler_ to manage session headers "manually", instead of PHP managing them automatically
 
 This package is installable and PSR-4 autoloadable via Composer as `relay/middleware`.
-
-## ResponseSender
-
-The _ResponseSender_ does just what it sounds like: it sends the PSR-7 response object.
-
-The _ResponseSender_ does nothing with the `$request` or `$response`, passing them immediately to `$next`. Afterwards, it takes the returned `$response` and sends it using `header()` and `echo`, and returns the sent `$response`.
-
-The _ResponseSender_ is intended to go at the top of the Relay queue, so that it is the middleware with the last opportunity to do something with the returned response.
-
-To add the _ResponseSender_ to your Relay queue, instantiate it directly ...
-
-```php
-$queue[] = new \Relay\Middleware\ResponseSender();
-```
-
-... or use a `$resolver` of your choice to instantiate it from the `$queue`.
 
 ## ExceptionHandler
 
@@ -41,6 +26,11 @@ $queue = new \Relay\Middleware\ExceptionHandler(new ResponseImplementation());
 ```
 
 ... or use a `$resolver` of your choice to instantiate it from the `$queue`.
+
+## FormContentHandler
+
+_FormContentHandler_ works almost identically to _JsonContentHandler_ (below), but parses payloads of requests that have `application/x-www-form-urlencoded` as the `Content-Type`.
+
 
 ## JsonContentHandler
 
@@ -69,12 +59,6 @@ To access the decoded parameters in subsequent middleware, use the
 ```php
 $decodedJsonData = $request->getParsedBody();
 ```
-
-## FormContentHandler
-
-_FormContentHandler_ works almost identically to _JsonContentHandler_, but parses
-payloads of requests that have `application/x-www-form-urlencoded` as the `Content-Type`.
-
 
 ## JsonDecoder
 
@@ -106,3 +90,20 @@ To access the decoded parameters in subsequent middleware, use the
 ```php
 $decodedJsonData = $request->getParsedBody();
 ```
+
+## ResponseSender
+
+The _ResponseSender_ does just what it sounds like: it sends the PSR-7 response object.
+
+The _ResponseSender_ does nothing with the `$request` or `$response`, passing them immediately to `$next`. Afterwards, it takes the returned `$response` and sends it using `header()` and `echo`, and returns the sent `$response`.
+
+The _ResponseSender_ is intended to go at the top of the Relay queue, so that it is the middleware with the last opportunity to do something with the returned response.
+
+To add the _ResponseSender_ to your Relay queue, instantiate it directly ...
+
+```php
+$queue[] = new \Relay\Middleware\ResponseSender();
+```
+
+... or use a `$resolver` of your choice to instantiate it from the `$queue`.
+
