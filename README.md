@@ -122,7 +122,7 @@ Normally, PHP will send out headers for you automatically when you call `session
 To add the _SessionHeadersHandler_ to your queue, instantiate it directly...
 
 ```php
-$queue = new \Relay\Middleware\SessionHeadersHandler();
+$queue[] = new \Relay\Middleware\SessionHeadersHandler();
 ```
 
 ... or use a `$resolver` of your choice to instantiate it from the `$queue`.
