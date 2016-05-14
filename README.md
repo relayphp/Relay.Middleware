@@ -22,7 +22,7 @@ The _ExceptionHandler_ is intended to go near the top of the Relay queue, but af
 To add the _ExceptionHandler_ to your queue, instantiate it directly with an empty $response implementation object ...
 
 ```php
-$queue = new \Relay\Middleware\ExceptionHandler(new ResponseImplementation());
+$queue[] = new \Relay\Middleware\ExceptionHandler(new ResponseImplementation());
 ```
 
 ... or use a `$resolver` of your choice to instantiate it from the `$queue`.
@@ -48,7 +48,7 @@ the _JsonContentHandler_ ignores the `$request` and continues the chain.
 To add the _JsonContentHandler_ to your queue, instantiate it directly...
 
 ```php
-$queue = new \Relay\Middleware\JsonContentHandler();
+$queue[] = new \Relay\Middleware\JsonContentHandler();
 ```
 
 ... or use a `$resolver` of your choice to instantiate it from the `$queue`.
@@ -78,7 +78,7 @@ does nothing with the `$request` and passes it and the `$response` to `$next`.
 To add the _JsonDecoder_ to your queue, instantiate it directly...
 
 ```php
-$queue = new \Relay\Middleware\JsonDecoder();
+$queue[] = new \Relay\Middleware\JsonDecoder();
 ```
 
 ... or use a `$resolver` of your choice to instantiate it from the `$queue`.
