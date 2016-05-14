@@ -45,7 +45,7 @@ class SessionHeadersHandler
      *
      * @var string
      *
-     * @see session_set_cache_limiter()
+     * @see session_cache_limiter()
      *
      */
     protected $cacheLimiter;
@@ -56,7 +56,7 @@ class SessionHeadersHandler
      *
      * @var int
      *
-     * @see session_set_cache_expire()
+     * @see session_cache_expire()
      *
      */
     protected $cacheExpire;
@@ -66,8 +66,6 @@ class SessionHeadersHandler
      * The current Unix timestamp.
      *
      * @var int
-     *
-     * @see session_set_cache_expire()
      *
      */
     protected $time;
