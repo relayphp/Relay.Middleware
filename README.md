@@ -75,7 +75,6 @@ before passing it and the `$response` to `$next`. If the method is `GET` or the
 `Content-Type` header does not specify `application/json`, the _JsonDecoder_
 does nothing with the `$request` and passes it and the `$response` to `$next`.
 
-
 To add the _JsonDecoder_ to your queue, instantiate it directly...
 
 ```php
@@ -107,3 +106,27 @@ $queue[] = new \Relay\Middleware\ResponseSender();
 
 ... or use a `$resolver` of your choice to instantiate it from the `$queue`.
 
+## SessionHeadersHandler
+
+Normally, PHP will send out headers for you automatically when you call `session_start()`. However, this means the headers are not being sent as part of the PSR-7 response object, and are thus outside your control. This handler puts them back under your control by placing the relevant headers in the PSR-7 response; its behavior is almost identical to the native PHP automatic session headers behavior.
+
+> NOTE: For this middleware to work, you **must** disable the PHP session header management ini settings. For example:
+>
+>     ini_set('session.use_trans_sid', false);
+>     ini_set('session.use_cookies', false);
+>     ini_set('session.use_only_cookies', true);
+>     ini_set('session.cache_limiter', '');
+>
+> If you do not, the handler will throw a RuntimeException.
+
+To add the _SessionHeadersHandler_ to your queue, instantiate it directly...
+
+```php
+$queue = new \Relay\Middleware\SessionHeadersHandler();
+```
+
+... or use a `$resolver` of your choice to instantiate it from the `$queue`.
+
+When instantiating, you can pass a [cache limiter](http://php.net/session_set_cache_limiter) value as the first parameter. The allowed values are 'nocache' (the default), 'public', 'private_no_cache', or 'priviate'. If you want no cache limiter header at all, pass an empty string ''.
+
+You can also pass a [cache expire](http://php.net/session_set_cache_expire) value, in minutes, as the second parameter.
