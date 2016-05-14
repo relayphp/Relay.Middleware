@@ -40,6 +40,8 @@ class SessionHeadersHandler
 
     protected $cacheExpire;
 
+    protected $time;
+
     public function __construct($cacheLimiter = 'nocache', $cacheExpire = 180)
     {
         if (ini_get('session.use_trans_sid') != false) {
@@ -92,6 +94,9 @@ class SessionHeadersHandler
         // invoke the next middleware
         $response = $next($request, $response);
 
+        // record the current time
+        $this->time = time();
+
         // is the session id still the same?
         $newId = session_id();
         if ($newId !== $oldId) {
@@ -125,7 +130,7 @@ class SessionHeadersHandler
         $params = session_get_cookie_params();
 
         if ($params['lifetime']) {
-            $expires = $this->timestamp(time() + $params['lifetime']);
+            $expires = $this->timestamp($params['lifetime']);
             $cookie .= "; expires={$expires}; max-age={$params['lifetime']}";
         }
 
@@ -148,9 +153,9 @@ class SessionHeadersHandler
         return $response->withAddedHeader('Set-Cookie', $cookie);
     }
 
-    protected function timestamp($time)
+    protected function timestamp($adj = 0)
     {
-        return gmdate('D, d M Y H:i:s T', $time);
+        return gmdate('D, d M Y H:i:s T', $this->time + $adj);
     }
 
     protected function withCacheLimiter(Response $response)
@@ -172,11 +177,10 @@ class SessionHeadersHandler
     // session.c:1065
     protected function cacheLimiterPublic(Response $response)
     {
-        $now = time();
-        $maxAge = $this->cacheExpires * 60;
-        $expires = $this->timestamp($now + $maxAge);
+        $maxAge = $this->cacheExpire * 60;
+        $expires = $this->timestamp($maxAge);
         $cacheControl = "public, max-age={$maxAge}";
-        $lastModified = $this->timestamp($now);
+        $lastModified = $this->timestamp();
 
         return $response
             ->withAddedHeader('Expires', $expires)
@@ -187,9 +191,9 @@ class SessionHeadersHandler
     // session.c:1084
     protected function cacheLimiterPrivateNoExpire(Response $response)
     {
-        $maxAge = $this->cacheExpires * 60;
+        $maxAge = $this->cacheExpire * 60;
         $cacheControl = "private, max-age={$maxAge}, pre-check={$maxAge}";
-        $lastModified = $this->timestamp(time());
+        $lastModified = $this->timestamp();
 
         return $response
             ->withAddedHeader('Cache-Control', $cacheControl)
@@ -200,7 +204,7 @@ class SessionHeadersHandler
     protected function cacheLimiterPrivate(Response $response)
     {
         $response = $response->withAddedHeader('Expires', self::EXPIRED);
-        return $response->withCacheLimiterPrivateNoExpire($response);
+        return $this->cacheLimiterPrivateNoExpire($response);
     }
 
     // session.c:1102
