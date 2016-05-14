@@ -64,10 +64,10 @@ class JsonContentHandler extends ContentHandler
     {
         $body = json_decode($body, $this->assoc, $this->maxDepth, $this->options);
 
-        if (json_last_error()) {
-            $this->throwException('Error parsing JSON: ' . json_last_error_msg());
+        if (! json_last_error()) {
+            return $body;
         }
 
-        return $body;
+        return $this->throwException('Error parsing JSON: ' . json_last_error_msg());
     }
 }
