@@ -20,7 +20,13 @@ namespace Relay\Middleware;
 class FormContentHandler extends ContentHandler
 {
     /**
-     * @inheritdoc
+     *
+     * Checks if the content type is appropriate for handling.
+     *
+     * @param string $mime The mime type.
+     *
+     * @return boolean
+     *
      */
     protected function isApplicableMimeType($mime)
     {
@@ -28,7 +34,15 @@ class FormContentHandler extends ContentHandler
     }
 
     /**
-     * @inheritdoc
+     *
+     * Parses the request body.
+     *
+     * @param string $body The request body.
+     *
+     * @return mixed
+     *
+     * @uses throwException()
+     *
      */
     protected function getParsedBody($body)
     {

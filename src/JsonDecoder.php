@@ -24,27 +24,42 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 class JsonDecoder
 {
     /**
+     *
+     * When true, returned objects will be converted into associative arrays.
+     *
      * @var bool
+     *
      */
     protected $assoc;
 
     /**
+     *
+     * User specified recursion depth.
+     *
      * @var int
+     *
      */
     protected $maxDepth;
 
     /**
+     *
+     * Bitmask of JSON decode options. Currently only JSON_BIGINT_AS_STRING is
+     * supported (default is to cast large integers as floats).
+     *
      * @var int
+     *
      */
     protected $options;
 
     /**
      *
-     * @param bool $assoc
+     * Constructor.
      *
-     * @param int $maxDepth
+     * @param bool $assoc Return objects as associative arrays?
      *
-     * @param int $options
+     * @param int $maxDepth Max recursion depth.
+     *
+     * @param int $options Bitmask of JSON decode options.
      *
      */
     public function __construct($assoc = false, $maxDepth = 256, $options = 0)
