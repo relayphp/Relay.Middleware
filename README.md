@@ -127,6 +127,6 @@ $queue = new \Relay\Middleware\SessionHeadersHandler();
 
 ... or use a `$resolver` of your choice to instantiate it from the `$queue`.
 
-When instantiating, you can pass a [cache limiter](http://php.net/session_set_cache_limiter) value as the first parameter. The allowed values are 'nocache' (the default), 'public', 'private_no_cache', or 'priviate'. If you want no cache limiter header at all, pass an empty string ''.
+When instantiating, you can pass a [cache limiter](http://php.net/session_cache_limiter) value as the first constructor parameter. The allowed values are 'nocache', 'public', 'private_no_cache', or 'priviate'. If you want no cache limiter header at all, pass an empty string ''. The default is 'nocache'.
 
-You can also pass a [cache expire](http://php.net/session_set_cache_expire) value, in minutes, as the second parameter.
+You can also pass a [cache expire](http://php.net/session_cache_expire) value, in minutes, as the second constructor parameter. The default is 180 minutes.
