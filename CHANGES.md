@@ -1,4 +1,7 @@
-- Modify JsonContentHandler->isApplicableMimeType() to be more flexible
+- Added new middleware: StatelessExceptionHandler
 
-- Add SessionHeadersHandler, with support for cache limiters
+- Fixed #22; the "old" incoming session ID is now set properly.
 
+- Various typo fixes in docs.
+
+Thanks to everyone who helped make this release possible!
