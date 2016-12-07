@@ -128,6 +128,7 @@ class SessionHeadersHandler
         $cookies = $request->getCookieParams();
         if (! empty($cookies[$oldName])) {
             $oldId = $cookies[$oldName];
+            session_id($oldId);
         }
 
         // invoke the next middleware
