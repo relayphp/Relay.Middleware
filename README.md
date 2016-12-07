@@ -3,12 +3,12 @@
 This package include the following Relay-compatible middleware:
 
 - _ExceptionHandler_ to handle exceptions from subsequent middleware
-- _StatelessExceptionHandler_ to handle exceptions from subsequent middleware (suitable for multiple request/response cycles)
 - _FormContentHandler_ to deserialize the URL-encoded payload of a PSR-7 request
 - _JsonContentHandler_ to deserialize the JSON payload of a PSR-7 request
 - _JsonDecoder_ to deserialize the JSON payload of a PSR-7 request (**deprecated**)
 - _ResponseSender_ to send a PSR-7 response
 - _SessionHeadersHandler_ to manage session headers "manually", instead of PHP managing them automatically
+- _StatelessExceptionHandler_ to handle exceptions from subsequent middleware (suitable for multiple request/response cycles)
 
 This package is installable and PSR-4 autoloadable via Composer as `relay/middleware`.
 
@@ -27,20 +27,6 @@ $queue[] = new \Relay\Middleware\ExceptionHandler(new ResponseImplementation());
 ```
 
 ... or use a `$resolver` of your choice to instantiate it from the `$queue`.
-
-## StatelessExceptionHandler
-
-The _StatelessExceptionHandler_ behaves the same as the _ExceptionHandler_. The difference is that it is suitable for use in environments where it may be used multiple times.
-
-To add the _StatelessExceptionHandler_ to your queue, instantiate it directly with a factory that can be used to create $response objects ...
-
-```php
-$responseFactory = function () {
-    return new ResponseImplementation();
-};
-
-$queue[] = new \Relay\Middleware\StatelessExceptionHandler($responseFactory);
-```
 
 ## FormContentHandler
 
@@ -145,3 +131,17 @@ $queue[] = new \Relay\Middleware\SessionHeadersHandler();
 When instantiating, you can pass a [cache limiter](http://php.net/session_cache_limiter) value as the first constructor parameter. The allowed values are 'nocache', 'public', 'private_no_cache', or 'private'. If you want no cache limiter header at all, pass an empty string ''. The default is 'nocache'.
 
 You can also pass a [cache expire](http://php.net/session_cache_expire) value, in minutes, as the second constructor parameter. The default is 180 minutes.
+
+## StatelessExceptionHandler
+
+The _StatelessExceptionHandler_ behaves the same as the _ExceptionHandler_. The difference is that it is suitable for use in environments where it may be used multiple times.
+
+To add the _StatelessExceptionHandler_ to your queue, instantiate it directly with a factory that can be used to create $response objects ...
+
+```php
+$responseFactory = function () {
+    return new ResponseImplementation();
+};
+
+$queue[] = new \Relay\Middleware\StatelessExceptionHandler($responseFactory);
+```
