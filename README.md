@@ -32,7 +32,6 @@ $queue[] = new \Relay\Middleware\ExceptionHandler(new ResponseImplementation());
 
 _FormContentHandler_ works almost identically to _JsonContentHandler_ (below), but parses payloads of requests that have `application/x-www-form-urlencoded` as the `Content-Type`.
 
-
 ## JsonContentHandler
 
 Again, the _JsonContentHandler_ does what it sounds like: it deserializes the JSON
