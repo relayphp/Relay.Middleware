@@ -65,7 +65,7 @@ class ExceptionHandler
         try {
             $response = $next($request, $response);
         } catch (Exception $e) {
-            $response = $this->exceptionResponse->withStatus(500);
+            $response = $this->exceptionResponse->withStatus(500, $e->getMessage());
             $response->getBody()->write(get_class($e) . ': ' . $e->getMessage());
         }
         return $response;
