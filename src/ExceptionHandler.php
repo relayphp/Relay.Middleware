@@ -25,7 +25,7 @@ class ExceptionHandler
 {
     /**
      *
-     * The Response to use when showing the excpetion; this *replaces* the
+     * The Response to use when showing the exception; this *replaces* the
      * existing Response.
      *
      * @var Response
